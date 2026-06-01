@@ -1,17 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingBag, User, Menu, X, LogOut } from "lucide-react";
-import { useState, useEffect } from "react";
+import {
+  ShoppingBag,
+  User,
+  Menu,
+  X,
+  LogOut,
+  Package,
+  LogIn,
+} from "lucide-react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 function Navbar({ cartItemCount = 0 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const isLoggedIn = !!localStorage.getItem("token");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  }, []);
+
 
   const handleProfileClick = () => {
     const token = localStorage.getItem("token");
@@ -25,9 +31,10 @@ function Navbar({ cartItemCount = 0 }) {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userName");
     toast.success("Logged out");
-    setIsLoggedIn(false);
     navigate("/");
+    window.location.reload();
   };
 
   return (
@@ -75,23 +82,80 @@ function Navbar({ cartItemCount = 0 }) {
             </div>
 
             {/* Profile */}
-            <button
-              onClick={handleProfileClick}
-              className="p-2 text-gray-400 hover:text-white transition"
-            >
-              <User className="h-5 w-5" />
-            </button>
+            <div className="relative">
 
-            {/* Logout (only if logged in) */}
-            {isLoggedIn && (
-              <button
-                onClick={handleLogout}
-                className="hidden md:flex items-center gap-1 text-sm text-gray-400 hover:text-white transition"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </button>
-            )}
+              {!isLoggedIn ? (
+                <div className="hidden md:flex items-center gap-4">
+
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Login
+                  </button>
+
+                  <button
+                    onClick={() => navigate("/register")}
+                    className="px-4 py-2 bg-primary text-black rounded-lg font-medium hover:scale-105 transition"
+                  >
+                    Register
+                  </button>
+
+                </div>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-black font-bold"
+                  >
+                    {localStorage.getItem("userName")
+                      ? localStorage.getItem("userName")[0].toUpperCase()
+                      : "U"}
+                  </button>
+
+                  {profileMenuOpen && (
+                    <div className="absolute right-0 mt-3 w-52 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50">
+
+                      <button
+                        onClick={() => {
+                          navigate("/profile");
+                          setProfileMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary text-left"
+                      >
+                        <User className="h-4 w-4" />
+                        Profile
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          navigate("/orders");
+                          setProfileMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary text-left"
+                      >
+                        <Package className="h-4 w-4" />
+                        Orders
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setProfileMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary text-left text-red-400"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </button>
+
+                    </div>
+                  )}
+                </>
+              )}
+
+            </div>
 
             {/* Mobile Menu Toggle */}
             <button

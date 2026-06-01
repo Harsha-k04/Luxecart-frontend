@@ -18,10 +18,11 @@ function Login() {
             const res = await API.post("/users/login", form);
 
             localStorage.setItem("token", res.data.token);
+            localStorage.setItem("userName", res.data.name);
 
             toast.success("Welcome back!");
             navigate("/");
-        } catch (err) {
+        } catch {
             toast.error("Invalid credentials");
         }
     };

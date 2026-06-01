@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Orders from "./pages/Orders"
 
 function App() {
   return (
@@ -26,6 +27,14 @@ function App() {
             <Profile />
           </ProtectedRoute>
         } />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </LayoutWrapper>
   );
