@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Orders from "./pages/Orders"
+import Wishlist from "./pages/Wishlist";
 
 function App() {
   return (
@@ -32,6 +33,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Orders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/wishlist"
+          element={
+            <ProtectedRoute>
+              <Wishlist />
             </ProtectedRoute>
           }
         />

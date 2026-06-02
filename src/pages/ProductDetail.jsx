@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import ProductCard from "../components/product-card";
@@ -6,8 +6,11 @@ import toast from "react-hot-toast";
 
 function ProductDetail() {
     const { id } = useParams();
+    const navigate = useNavigate();
+
     const [product, setProduct] = useState(null);
     const [recommendations, setRecommendations] = useState([]);
+    const [isWishlisted, setIsWishlisted] = useState(false);
 
     useEffect(() => {
         API.get(`/products/${id}`).then((res) => {
@@ -17,6 +20,27 @@ function ProductDetail() {
         API.get(`/products/recommend/${id}`).then((res) => {
             setRecommendations(res.data);
         });
+
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            API.get("/users/wishlist", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+                .then((res) => {
+                    const exists = res.data.some(
+                        (item) => item._id === id
+                    );
+
+                    setIsWishlisted(exists);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
     }, [id]);
 
     const addToCart = async () => {
@@ -42,13 +66,59 @@ function ProductDetail() {
             );
 
             toast.success("Added to cart!");
+
         } catch (error) {
             console.error(error);
             toast.error("Error adding to cart");
         }
     };
 
-    // 🔥 Image mapping (fix same image issue)
+    const toggleWishlist = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                toast.error("Please login first");
+                return;
+            }
+
+            if (isWishlisted) {
+
+                await API.delete(
+                    `/users/wishlist/${product._id}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                setIsWishlisted(false);
+                toast.success("Removed from wishlist");
+
+            } else {
+
+                await API.post(
+                    `/users/wishlist/${product._id}`,
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                setIsWishlisted(true);
+                toast.success("Added to wishlist");
+            }
+
+        } catch (error) {
+            console.error(error);
+            toast.error("Wishlist update failed");
+        }
+    };
+
+    // 🔥 Image mapping
     const imageMap = {
         "Rolex Submariner":
             "https://images.unsplash.com/photo-1547996160-81dfa63595aa",
@@ -75,7 +145,10 @@ function ProductDetail() {
         <div className="min-h-screen bg-background text-foreground animate-fadeIn px-6 md:px-10 py-10">
 
             {/* Back Link */}
-            <p className="text-muted mb-6 cursor-pointer hover:text-primary transition">
+            <p
+                onClick={() => navigate("/")}
+                className="text-muted mb-6 cursor-pointer hover:text-primary transition"
+            >
                 ← Back to Collection
             </p>
 
@@ -102,9 +175,29 @@ function ProductDetail() {
                         {product.name}
                     </h1>
 
-                    <p className="text-2xl text-primary font-semibold mb-4">
-                        ₹{product.price}
-                    </p>
+                    <div className="mb-4">
+                        <p className="text-2xl text-primary font-semibold">
+                            ₹{product.price}
+                        </p>
+
+                        {product.stock > 10 && (
+                            <p className="text-green-500 mt-2 font-medium">
+                                ✓ In Stock ({product.stock} available)
+                            </p>
+                        )}
+
+                        {product.stock > 0 && product.stock <= 10 && (
+                            <p className="text-yellow-500 mt-2 font-medium">
+                                ⚠ Only {product.stock} left
+                            </p>
+                        )}
+
+                        {product.stock === 0 && (
+                            <p className="text-red-500 mt-2 font-medium">
+                                ✕ Out of Stock
+                            </p>
+                        )}
+                    </div>
 
                     <p className="text-muted mb-6 leading-relaxed">
                         {product.description}
@@ -112,19 +205,39 @@ function ProductDetail() {
 
                     {/* Buttons */}
                     <div className="flex gap-4 mb-8">
+
                         <button
                             onClick={addToCart}
-                            className="px-6 py-3 bg-primary text-black font-semibold rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/30"
+                            disabled={product.stock === 0}
+                            className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300
+                            ${
+                                product.stock === 0
+                                    ? "bg-gray-600 cursor-not-allowed text-gray-300"
+                                    : "bg-primary text-black hover:scale-105 hover:shadow-lg hover:shadow-primary/30"
+                            }`}
                         >
-                            Add to Cart
+                            {product.stock === 0
+                                ? "Out of Stock"
+                                : "Add to Cart"}
                         </button>
 
-                        <button className="px-6 py-3 bg-primary text-black font-semibold rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/30">
-                            Add to Wishlist
+                        <button
+                            onClick={toggleWishlist}
+                            className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 hover:scale-105
+                            ${
+                                isWishlisted
+                                    ? "bg-red-500 text-white"
+                                    : "bg-primary text-black hover:shadow-lg hover:shadow-primary/30"
+                            }`}
+                        >
+                            {isWishlisted
+                                ? "♥ Wishlisted"
+                                : "♡ Add to Wishlist"}
                         </button>
+
                     </div>
 
-                    {/* Features Row (v0 style) */}
+                    {/* Features Row */}
                     <div className="flex flex-wrap gap-6 text-sm text-muted border-t border-border pt-6">
                         <span>✔ Authenticity Guaranteed</span>
                         <span>🚚 Free Shipping</span>
@@ -143,13 +256,17 @@ function ProductDetail() {
                 <div className="overflow-x-auto pb-4 -mx-6 px-6">
                     <div className="flex gap-6 min-w-max">
                         {recommendations.map((r) => (
-                            <div key={r._id} className="w-72 flex-shrink-0">
+                            <div
+                                key={r._id}
+                                className="w-72 flex-shrink-0"
+                            >
                                 <ProductCard product={r} />
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
+
         </div>
     );
 }

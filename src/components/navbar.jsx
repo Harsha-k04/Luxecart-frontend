@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import {
   ShoppingBag,
+  Heart,
   User,
   Menu,
   X,
@@ -138,6 +139,16 @@ function Navbar({ cartItemCount = 0 }) {
                         <Package className="h-4 w-4" />
                         Orders
                       </button>
+                      <button
+                        onClick={() => {
+                          navigate("/wishlist");
+                          setProfileMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary text-left"
+                      >
+                        <Heart className="h-4 w-4" />
+                        Wishlist
+                      </button>
 
                       <button
                         onClick={() => {
@@ -205,6 +216,15 @@ function Navbar({ cartItemCount = 0 }) {
                 className="text-sm text-gray-400 hover:text-white text-left"
               >
                 Profile
+              </button>
+              <button
+                onClick={() => {
+                  navigate("/wishlist");
+                  setMobileMenuOpen(false);
+                }}
+                className="text-sm text-gray-400 hover:text-white text-left"
+              >
+                Wishlist
               </button>
 
               {/* Logout */}
