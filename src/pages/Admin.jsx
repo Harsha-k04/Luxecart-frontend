@@ -3,8 +3,14 @@ import API from "../services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-
 function Admin() {
+    const [stats, setStats] = useState({
+        totalProducts: 0,
+        totalOrders: 0,
+        totalUsers: 0,
+        totalRevenue: 0,
+    });
+
     const [products, setProducts] = useState([]);
 
     const [form, setForm] = useState({
@@ -18,7 +24,17 @@ function Admin() {
     });
 
     const [editingId, setEditingId] = useState(null);
+
     const navigate = useNavigate();
+
+    const fetchStats = async () => {
+        try {
+            const res = await API.get("/admin/stats");
+            setStats(res.data);
+        } catch {
+            toast.error("Failed to load analytics");
+        }
+    };
 
     const refreshProducts = async () => {
         try {
@@ -30,16 +46,12 @@ function Admin() {
     };
 
     useEffect(() => {
-        const loadProducts = async () => {
-            try {
-                const res = await API.get("/products");
-                setProducts(res.data);
-            } catch {
-                toast.error("Failed to load products");
-            }
+        const loadData = async () => {
+            await refreshProducts();
+            await fetchStats();
         };
 
-        loadProducts();
+        loadData();
     }, []);
 
     const handleChange = (e) => {
@@ -94,7 +106,9 @@ function Admin() {
             }
 
             resetForm();
+
             await refreshProducts();
+            await fetchStats();
 
         } catch (error) {
             console.error(error);
@@ -134,6 +148,7 @@ function Admin() {
             toast.success("Product deleted");
 
             await refreshProducts();
+            await fetchStats();
 
         } catch {
             toast.error("Delete failed");
@@ -147,6 +162,51 @@ function Admin() {
                 Admin Dashboard
             </h1>
 
+            {/* Analytics Cards */}
+            <div className="grid md:grid-cols-4 gap-4 mb-8">
+
+                <div className="bg-card border border-border rounded-xl p-5">
+                    <p className="text-muted text-sm">
+                        Products
+                    </p>
+
+                    <h2 className="text-3xl font-bold">
+                        {stats.totalProducts}
+                    </h2>
+                </div>
+
+                <div className="bg-card border border-border rounded-xl p-5">
+                    <p className="text-muted text-sm">
+                        Orders
+                    </p>
+
+                    <h2 className="text-3xl font-bold">
+                        {stats.totalOrders}
+                    </h2>
+                </div>
+
+                <div className="bg-card border border-border rounded-xl p-5">
+                    <p className="text-muted text-sm">
+                        Users
+                    </p>
+
+                    <h2 className="text-3xl font-bold">
+                        {stats.totalUsers}
+                    </h2>
+                </div>
+
+                <div className="bg-card border border-border rounded-xl p-5">
+                    <p className="text-muted text-sm">
+                        Revenue
+                    </p>
+
+                    <h2 className="text-3xl font-bold text-primary">
+                        ₹{stats.totalRevenue}
+                    </h2>
+                </div>
+
+            </div>
+
             <div className="mb-8">
                 <button
                     onClick={() => navigate("/admin/orders")}
@@ -155,6 +215,7 @@ function Admin() {
                     View Orders
                 </button>
             </div>
+
             {/* Add / Edit Product Form */}
             <div className="bg-card border border-border rounded-xl p-6 mb-10">
 
@@ -263,21 +324,11 @@ function Admin() {
 
                     <thead className="border-b border-border">
                         <tr>
-                            <th className="text-left p-4">
-                                Name
-                            </th>
-                            <th className="text-left p-4">
-                                Brand
-                            </th>
-                            <th className="text-left p-4">
-                                Price
-                            </th>
-                            <th className="text-left p-4">
-                                Stock
-                            </th>
-                            <th className="text-left p-4">
-                                Actions
-                            </th>
+                            <th className="text-left p-4">Name</th>
+                            <th className="text-left p-4">Brand</th>
+                            <th className="text-left p-4">Price</th>
+                            <th className="text-left p-4">Stock</th>
+                            <th className="text-left p-4">Actions</th>
                         </tr>
                     </thead>
 
