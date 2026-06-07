@@ -16,6 +16,7 @@ function Navbar({ cartItemCount = 0 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const isLoggedIn = !!localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
 
@@ -32,6 +33,7 @@ function Navbar({ cartItemCount = 0 }) {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     localStorage.removeItem("userName");
     toast.success("Logged out");
     navigate("/");
@@ -110,8 +112,8 @@ function Navbar({ cartItemCount = 0 }) {
                     onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                     className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-black font-bold"
                   >
-                    {localStorage.getItem("userName")
-                      ? localStorage.getItem("userName")[0].toUpperCase()
+                    {user?.name
+                      ? user.name[0].toUpperCase()
                       : "U"}
                   </button>
 
@@ -149,7 +151,17 @@ function Navbar({ cartItemCount = 0 }) {
                         <Heart className="h-4 w-4" />
                         Wishlist
                       </button>
-
+                      {user?.role === "admin" && (
+                        <button
+                          onClick={() => {
+                            navigate("/admin");
+                            setProfileMenuOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary text-left"
+                        >
+                          Admin Dashboard
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           handleLogout();
@@ -226,7 +238,17 @@ function Navbar({ cartItemCount = 0 }) {
               >
                 Wishlist
               </button>
-
+              {user?.role === "admin" && (
+                <button
+                  onClick={() => {
+                    navigate("/admin");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-sm text-gray-400 hover:text-white text-left"
+                >
+                  Admin Dashboard
+                </button>
+              )}
               {/* Logout */}
               {isLoggedIn && (
                 <button

@@ -18,6 +18,16 @@ function Login() {
             const res = await API.post("/users/login", form);
 
             localStorage.setItem("token", res.data.token);
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify({
+                    _id: res.data._id,
+                    name: res.data.name,
+                    email: res.data.email,
+                    role: res.data.role,
+                })
+            );
             localStorage.setItem("userName", res.data.name);
 
             toast.success("Welcome back!");

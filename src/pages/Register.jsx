@@ -22,10 +22,14 @@ function Register() {
         try {
             await API.post("/users/register", form);
 
-            toast.success("Account created!");
+            toast.success("Account created! Please login.");
             navigate("/login");
-        } catch (err) {
-            toast.error("Registration failed");
+
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message ||
+                "Registration failed"
+            );
         }
     };
 

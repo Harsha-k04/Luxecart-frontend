@@ -9,6 +9,9 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Orders from "./pages/Orders"
 import Wishlist from "./pages/Wishlist";
+import Admin from "./pages/Admin";
+import AdminRoute from "./components/AdminRoute";
+import AdminOrders from "./pages/AdminOrders";
 
 function App() {
   return (
@@ -37,11 +40,27 @@ function App() {
           }
         />
         <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          }
+        />
+        <Route
           path="/wishlist"
           element={
             <ProtectedRoute>
               <Wishlist />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <AdminRoute>
+              <AdminOrders />
+            </AdminRoute>
           }
         />
       </Routes>
