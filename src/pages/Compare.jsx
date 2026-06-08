@@ -1,16 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Compare() {
-    const [products, setProducts] = useState([]);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const compare =
-            JSON.parse(localStorage.getItem("compare")) || [];
-
-        setProducts(compare);
-    }, []);
+    const [products, setProducts] = useState(() => {
+        return JSON.parse(localStorage.getItem("compare")) || [];
+    });
 
     const clearCompare = () => {
         localStorage.removeItem("compare");
@@ -38,7 +34,8 @@ function Compare() {
         );
     }
 
-    const [left, right] = products;
+    const left = products[0];
+    const right = products[1];
 
     return (
         <div className="min-h-screen bg-background text-foreground px-6 py-10">
