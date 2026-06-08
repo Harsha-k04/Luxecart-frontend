@@ -210,11 +210,10 @@ function ProductDetail() {
                             onClick={addToCart}
                             disabled={product.stock === 0}
                             className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300
-                            ${
-                                product.stock === 0
+                            ${product.stock === 0
                                     ? "bg-gray-600 cursor-not-allowed text-gray-300"
                                     : "bg-primary text-black hover:scale-105 hover:shadow-lg hover:shadow-primary/30"
-                            }`}
+                                }`}
                         >
                             {product.stock === 0
                                 ? "Out of Stock"
@@ -224,17 +223,47 @@ function ProductDetail() {
                         <button
                             onClick={toggleWishlist}
                             className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 hover:scale-105
-                            ${
-                                isWishlisted
+                            ${isWishlisted
                                     ? "bg-red-500 text-white"
                                     : "bg-primary text-black hover:shadow-lg hover:shadow-primary/30"
-                            }`}
+                                }`}
                         >
                             {isWishlisted
                                 ? "♥ Wishlisted"
                                 : "♡ Add to Wishlist"}
                         </button>
+                        <button
+                            onClick={() => {
+                                let compare =
+                                    JSON.parse(localStorage.getItem("compare")) || [];
 
+                                const exists = compare.find(
+                                    (item) => item._id === product._id
+                                );
+
+                                if (exists) {
+                                    toast.error("Already added");
+                                    return;
+                                }
+
+                                if (compare.length >= 2) {
+                                    toast.error("Only 2 watches can be compared");
+                                    return;
+                                }
+
+                                compare.push(product);
+
+                                localStorage.setItem(
+                                    "compare",
+                                    JSON.stringify(compare)
+                                );
+
+                                toast.success("Added to Compare");
+                            }}
+                            className="px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary hover:text-black transition"
+                        >
+                            Compare
+                        </button>
                     </div>
 
                     {/* Features Row */}

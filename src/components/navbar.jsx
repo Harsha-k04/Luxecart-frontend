@@ -66,6 +66,12 @@ function Navbar({ cartItemCount = 0 }) {
             <a href="#about" className="text-sm text-gray-400 hover:text-white transition">
               About
             </a>
+            <Link
+              to="/compare"
+              className="text-sm text-gray-400 hover:text-white transition"
+            >
+              Compare
+            </Link>
           </div>
 
           {/* Right Side */}
@@ -201,6 +207,12 @@ function Navbar({ cartItemCount = 0 }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
+              </Link>
+              <Link
+                to="/compare"
+                className="text-sm text-gray-400 hover:text-white transition"
+              >
+                Compare
               </Link>
 
               <a

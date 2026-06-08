@@ -12,6 +12,7 @@ import Wishlist from "./pages/Wishlist";
 import Admin from "./pages/Admin";
 import AdminRoute from "./components/AdminRoute";
 import AdminOrders from "./pages/AdminOrders";
+import Compare from "./pages/Compare";
 
 function App() {
   return (
@@ -62,6 +63,10 @@ function App() {
               <AdminOrders />
             </AdminRoute>
           }
+        />
+        <Route
+          path="/compare"
+          element={<Compare />}
         />
       </Routes>
     </LayoutWrapper>
