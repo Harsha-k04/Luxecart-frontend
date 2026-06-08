@@ -15,6 +15,19 @@ function ProductDetail() {
     useEffect(() => {
         API.get(`/products/${id}`).then((res) => {
             setProduct(res.data);
+            const viewed =
+                JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+
+            const filtered = viewed.filter(
+                (item) => item._id !== res.data._id
+            );
+
+            filtered.unshift(res.data);
+
+            localStorage.setItem(
+                "recentlyViewed",
+                JSON.stringify(filtered.slice(0, 5))
+            );
         });
 
         API.get(`/products/recommend/${id}`).then((res) => {

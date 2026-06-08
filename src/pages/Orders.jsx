@@ -140,8 +140,18 @@ function Orders() {
                                 {/* Status */}
                                 <div className="mt-6 flex justify-end">
 
-                                    <span className="px-4 py-2 rounded-full bg-green-500/20 text-green-400 text-sm font-medium">
-                                        Completed
+                                    <span
+                                        className={`px-4 py-2 rounded-full text-sm font-medium
+    ${order.status === "Pending"
+                                                ? "bg-yellow-500/20 text-yellow-400"
+                                                : order.status === "Processing"
+                                                    ? "bg-blue-500/20 text-blue-400"
+                                                    : order.status === "Shipped"
+                                                        ? "bg-purple-500/20 text-purple-400"
+                                                        : "bg-green-500/20 text-green-400"
+                                            }`}
+                                    >
+                                        {order.status}
                                     </span>
 
                                 </div>

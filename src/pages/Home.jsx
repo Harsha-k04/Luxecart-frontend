@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
 import ProductCard from "../components/product-card";
+import RecentlyViewed from "../components/RecentlyViewed";
 
 function Home() {
     const [products, setProducts] = useState([]);
@@ -158,7 +159,7 @@ function Home() {
                 )}
 
             </section>
-
+            <RecentlyViewed />
             {/* ABOUT SECTION */}
             <section className="mt-24 bg-card border-t border-border">
                 <div className="mx-auto max-w-7xl px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
